@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0"/>
+    <title>Paymentology Transaction Reconciliation</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}"/>
+    <script type="text/javascript" th:src="@{/webjars/jquery/jquery.min.js}"></script>
+    <script type="text/javascript" th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+    <script>
+        function displayReport(id) {
+             var report = document.getElementById(id);
+            if (report.style.display === "none") {
+                report.style.display = "block";
+            }
+        }
+    </script>
+</head>
+
+<body>
+
+
+<div class="container" style="max-width: 500px">
+    <h3 class="mb-3">Paymentology Transaction Reconciliation</h3>
+
+    <form
+            id="uploadForm"
+            method="post"
+            th:action="@{/api/v1/transaction/reconcile}"
+            enctype="multipart/form-data">
+        <input id="input-file1" type="file" name="file1"/>
+        <input id="input-file2" type="file" name="file2"/>
+        <br/>
+        <button class="btn btn-sm btn-outline-success float-right" type="submit">
+            Upload
+        </button>
+    </form>
+</div>
+<br/>
+<br/>
+
+<div th:if="${report != null}" class="container">
+    <h4>File Data</h4>
+    <div class="row border border-primary">
+        <div th:each="fileEntry : ${report}" class="col">
+            <h5 th:text="${fileEntry.get('fileName')}">File Name</h5>
+            <p>Total Records: <span th:text="${fileEntry.get('totalRecords')}"></span></p>
+            <p>Total Matched Records: <span th:text="${fileEntry.get('totalMatchedRecords')}"></span></p>
+            <p>Total Unmatched Records: <span th:text="${fileEntry.get('totalUnMatchedRecords')}"></span></p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col mr-auto ml-auto text-center">
+            <button type="button" name="show unmatched" class="btn btn-sm btn-outline-success " onclick="displayReport('unmatched_div')">Show UnMatched</button>
+            <button type="button" name="show closedMatch" class="btn btn-sm btn-outline-success" onclick="displayReport('closed_match_div')">Show ClosedMatch
+            </button>
+        </div>
+    </div>
+    </br></br>
+    <div id="unmatched_div" style="display: none;">
+        <h5>UnMatched Records</h5>
+        <div class="row border border-primary">
+            <div class="col">
+                <div class="row border border-secondary">
+                    <div class="col"><span>Id</span></div>
+                    <div class="col"><span>wallet Reference</span></div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="row border border-secondary">
+                    <div class="col"><span>Id</span></div>
+                    <div class="col"><span>Wallet Reference</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="row border border-primary">
+            <div th:each="fileEntry : ${report}" class="col">
+                <div th:each="record : ${fileEntry.get('unMatchedRecords')}" class="row border border-secondary">
+                    <div class="col text-start"><span th:text="${record.get('id')}"></span></div>
+                    <div class="col text-start"><span th:text="${record.get('walletReference')}"></span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br/>
+    <br/>
+    <div id="closed_match_div" style="display: none;">
+        <h5>Closed Matched Records</h5>
+        <div class="row border border-primary">
+            <div class="col">
+                <div class="row border border-secondary">
+                    <div class="col"><span>Id</span></div>
+                    <div class="col"><span>wallet Reference</span></div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="row border border-secondary">
+                    <div class="col"><span>Id</span></div>
+                    <div class="col"><span>Wallet Reference</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="row border border-primary">
+            <div th:each="fileEntry : ${report}" class="col">
+                <div th:each="record : ${fileEntry.get('unMatchedRecords')}" class="row border border-secondary">
+                    <div class="col text-start"><span th:text="${record.get('id')}"></span></div>
+                    <div class="col text-start"><span th:text="${record.get('walletReference')}"></span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+
+</html>
